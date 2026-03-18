@@ -10,6 +10,30 @@
 
 ## Quick Start
 
+### Option 0: Automated Setup (Windows - Recommended for First Time)
+
+#### Run Backend
+```bash
+# Double-click or run in terminal:
+setup_backend.bat
+```
+
+#### Run Frontend (in another terminal)
+```bash
+# Double-click or run in terminal:
+setup_frontend.bat
+```
+
+This will:
+1. Create virtual environment
+2. Install dependencies
+3. Generate ML models
+4. Start the server
+
+Then open: http://localhost:3000
+
+---
+
 ### Option 1: Manual Setup (Recommended for Development)
 
 #### 1. Backend Setup
@@ -99,30 +123,69 @@ docker-compose down
 
 ## Model Files Setup
 
-The application requires four trained ML model files. These should be placed in the `backend/` directory:
+The application requires four trained ML model files. These are automatically generated during setup or can be created manually:
 
-1. **model.pkl** - Trained classification model (Random Forest or XGBoost)
-2. **scaler.pkl** - StandardScaler for feature normalization
-3. **pca.pkl** - PCA model for dimensionality reduction
-4. **iso.pkl** - Isolation Forest for anomaly detection
+### Auto-Generated Models (Testing/Development)
 
-### Generating Model Files (if you have training data)
+Model files are created automatically by the setup scripts:
 
-```python
-import joblib
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.ensemble import IsolationForest, RandomForestClassifier
+```bash
+# Windows:
+python create_placeholder_models.py
 
-# Load and train your models...
-# Then save them:
-joblib.dump(scaler, 'backend/scaler.pkl')
-joblib.dump(pca, 'backend/pca.pkl')
-joblib.dump(iso_forest, 'backend/iso.pkl')
-joblib.dump(model, 'backend/model.pkl')
+# Linux/Mac:
+python3 create_placeholder_models.py
+```
+
+This generates placeholder models suitable for:
+- ✅ API testing
+- ✅ Frontend development
+- ✅ Architecture validation
+- ✅ Learning the pipeline
+
+### Production Models (Real Data)
+
+For real predictions with your UNSW_NB15 dataset:
+
+```bash
+# If you have the dataset:
+python generate_models.py --data /path/to/UNSW_NB15.parquet
+
+# Or for CSV format:
+python generate_models.py --data /path/to/UNSW_NB15.csv
+```
+
+### Model Files Location
+
+All models should be in `backend/` directory:
+- `model.pkl` - Classification model (RandomForest)
+- `scaler.pkl` - StandardScaler for feature normalization
+- `pca.pkl` - PCA model for dimensionality reduction
+- `iso.pkl` - Isolation Forest for anomaly detection
+
+Verify models are created:
+```bash
+ls -lh backend/*.pkl
 ```
 
 ---
+
+### Generating Models from Your Notebook
+
+If you have a trained notebook (like Khushi.ipynb), use the extraction script:
+
+```bash
+python extract_notebook_models.py
+```
+
+This will:
+1. Analyze your notebook structure
+2. Find trained model components
+3. Show you how to export them
+
+---
+
+## Model Files Setup
 
 ## Testing the API
 
