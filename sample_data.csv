@@ -1,0 +1,6 @@
+dur,sbytes,dbytes,sttl,dttl,sloss,dloss,service,sload,dload,spkts,dpkts,swin,dwin,stcpb,dtcpb,smeansz,dmeansz,trans_depth,res_bdy_len,sjit,djit,tcprpt,synack,ackdat,is_sm_ips_ports,ct_state_ttl,ct_flw_http_mthd,is_ftp_login,ct_ftp_cmd,ct_srv_src,ct_srv_dst,ct_dst_ltm,ct_src_ltm,ct_src_dport_ltm,ct_dst_sport_ltm,ct_dst_src_ltm
+0.001,200,200,254,0,0,0,http,800000.0,800000.0,2,0,0,0,0,0,100,0,0,0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,1,1,1,1,1,1,1
+0.002,300,300,255,0,0,0,https,900000.0,900000.0,3,1,0,0,0,0,100,300,0,0,0.1,0.1,0.0,0.0,0.0,0,1,0,0,0,2,2,2,2,2,2,2
+0.003,150,150,253,1,0,0,ftp,700000.0,700000.0,1,1,0,0,0,0,150,150,0,0,0.0,0.0,0.1,0.1,0.1,0,0,0,0,0,1,1,1,1,1,1,1
+0.001,250,250,254,0,0,0,ssh,850000.0,850000.0,2,0,0,0,0,0,125,0,0,0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,1,1,1,1,1,1,1
+0.005,400,400,252,2,0,0,dns,1000000.0,1000000.0,4,2,0,0,0,0,100,200,0,0,0.2,0.2,0.0,0.0,0.0,0,1,0,0,0,2,2,2,2,2,2,2
