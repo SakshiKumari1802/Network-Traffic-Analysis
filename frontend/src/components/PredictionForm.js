@@ -16,10 +16,37 @@ export default function PredictionForm() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTooltip, setActiveTooltip] = useState(null);
+
+  const explanations = {
+    confidence: {
+      title: 'Understanding Confidence Score',
+      body: 'The confidence score (0-100%) represents how certain the model is about its prediction. Higher percentages indicate stronger prediction certainty. Above 80% is highly confident, 60-80% is moderately confident, and below 60% suggests the model is less certain about the classification.'
+    },
+    anomaly: {
+      title: 'What is Anomaly Detection?',
+      body: 'The anomaly score indicates whether the network traffic pattern is normal or suspicious. "NORMAL" means typical traffic that matches learned patterns. "ANOMALY" means the traffic exhibits unusual characteristics that deviate from normal behavior, potentially indicating an attack or security threat.'
+    },
+    attack: {
+      title: 'Attack Type Classification',
+      body: 'When an anomaly is detected, the model classifies it into one of 9 attack categories: Generic (various attacks), Exploits (vulnerability exploitation), Fuzzers (random data injection), Backdoors (hidden access), Analysis (reconnaissance), DoS (denial of service), Reconnaissance (information gathering), Shellcode (malicious scripts), or Worms (self-propagating malware).'
+    }
+  };
+
+  const confidenceInterpretation = (confidence) => {
+    const percentage = confidence * 100;
+    if (percentage >= 85) return { level: 'Very High', color: 'text-green-400', description: 'Model is very confident in this prediction' };
+    if (percentage >= 70) return { level: 'High', color: 'text-cyan-400', description: 'Model is confident in this prediction' };
+    if (percentage >= 55) return { level: 'Moderate', color: 'text-yellow-400', description: 'Model has moderate confidence in this prediction' };
+    return { level: 'Low', color: 'text-orange-400', description: 'Model has low confidence; consider reviewing this result' };
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFeatures(prev => ({ ...prev, [name]: isNaN(value) ? value : parseFloat(value) }));
+    // Clear previous results when input changes to show fresh submission is needed
+    setResult(null);
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
@@ -130,7 +157,14 @@ export default function PredictionForm() {
               result.anomaly === 1
                 ? 'bg-gradient-to-br from-red-900/30 to-red-800/20 border-red-500/50 shadow-2xl shadow-red-500/20'
                 : 'bg-gradient-to-br from-green-900/30 to-green-800/20 border-green-500/50 shadow-2xl shadow-green-500/20'
-            } card-hover animate-slideInLeft`}>
+            } card-hover animate-slideInLeft relative group`}>
+              <button
+                onClick={() => setActiveTooltip(activeTooltip === 'anomaly' ? null : 'anomaly')}
+                className="absolute top-4 right-4 w-6 h-6 bg-blue-500/50 hover:bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200"
+                title="Learn more about anomaly detection"
+              >
+                ⓘ
+              </button>
               <div className="flex flex-col items-center space-y-4">
                 <div className="text-5xl animate-pulse-scale">
                   {result.anomaly === 1 ? '🚨' : '✅'}
@@ -142,19 +176,43 @@ export default function PredictionForm() {
                   {result.anomaly === 1 ? 'ANOMALY' : 'NORMAL'}
                 </p>
               </div>
+              {activeTooltip === 'anomaly' && (
+                <div className="mt-4 pt-4 border-t border-slate-600/50 text-xs leading-relaxed text-gray-300 animate-fadeInUp">
+                  {explanations.anomaly.body}
+                </div>
+              )}
             </div>
 
             {/* Attack Type */}
-            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/50 shadow-2xl shadow-purple-500/20 card-hover animate-scaleIn">
+            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/20 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/50 shadow-2xl shadow-purple-500/20 card-hover animate-scaleIn relative group">
+              <button
+                onClick={() => setActiveTooltip(activeTooltip === 'attack' ? null : 'attack')}
+                className="absolute top-4 right-4 w-6 h-6 bg-blue-500/50 hover:bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200"
+                title="Learn more about attack types"
+              >
+                ⓘ
+              </button>
               <div className="flex flex-col items-center space-y-4">
                 <div className="text-5xl animate-float">🎯</div>
                 <p className="text-gray-300 text-sm">Attack Type</p>
                 <p className="text-2xl font-bold text-purple-300">{result.attack_type}</p>
               </div>
+              {activeTooltip === 'attack' && (
+                <div className="mt-4 pt-4 border-t border-slate-600/50 text-xs leading-relaxed text-gray-300 animate-fadeInUp">
+                  {explanations.attack.body}
+                </div>
+              )}
             </div>
 
             {/* Confidence */}
-            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 backdrop-blur-sm rounded-2xl p-8 border border-yellow-500/50 shadow-2xl shadow-yellow-500/20 card-hover animate-slideInRight">
+            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 backdrop-blur-sm rounded-2xl p-8 border border-yellow-500/50 shadow-2xl shadow-yellow-500/20 card-hover animate-slideInRight relative group">
+              <button
+                onClick={() => setActiveTooltip(activeTooltip === 'confidence' ? null : 'confidence')}
+                className="absolute top-4 right-4 w-6 h-6 bg-blue-500/50 hover:bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200"
+                title="Learn more about confidence scores"
+              >
+                ⓘ
+              </button>
               <div className="flex flex-col items-center space-y-4">
                 <div className="text-5xl">📊</div>
                 <p className="text-gray-300 text-sm">Confidence</p>
@@ -165,6 +223,70 @@ export default function PredictionForm() {
                     className="bg-gradient-to-r from-yellow-500 to-yellow-400 h-2 rounded-full transition-all duration-1000"
                     style={{ width: `${result.confidence * 100}%` }}
                   />
+                </div>
+                <p className={`text-xs font-semibold ${confidenceInterpretation(result.confidence).color}`}>
+                  {confidenceInterpretation(result.confidence).level} Confidence
+                </p>
+              </div>
+              {activeTooltip === 'confidence' && (
+                <div className="mt-4 pt-4 border-t border-slate-600/50 text-xs leading-relaxed text-gray-300 animate-fadeInUp">
+                  {explanations.confidence.body}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Understanding Results Section */}
+          <div className="bg-gradient-to-br from-blue-900/20 to-cyan-900/20 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30 glass animate-slideInLeft">
+            <h3 className="font-bold text-xl mb-6 flex items-center space-x-2 gradient-text">
+              <span>💡</span>
+              <span>Understanding Your Results</span>
+            </h3>
+            <div className="space-y-4">
+              <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                <div className="flex items-start space-x-3">
+                  <span className="text-lg">🔍</span>
+                  <div>
+                    <p className="font-semibold text-cyan-300 mb-1">What does this prediction mean?</p>
+                    <p className="text-sm text-gray-300">
+                      {result.anomaly === 1
+                        ? `The system detected ANOMALOUS traffic. The pattern identified as "${result.attack_type}" attack type with ${(result.confidence * 100).toFixed(1)}% confidence. This suggests potential malicious activity. Take appropriate security measures.`
+                        : `The system detected NORMAL traffic. This network pattern matches typical benign behavior with ${(result.confidence * 100).toFixed(1)}% confidence. No identified threats or anomalies.`
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-lg">📈</span>
+                    <div>
+                      <p className="font-semibold text-yellow-300 mb-1">Confidence Levels</p>
+                      <p className="text-xs text-gray-400 space-y-1">
+                        <div>• <span className="font-medium">85-100%</span> - Very High</div>
+                        <div>• <span className="font-medium">70-85%</span> - High</div>
+                        <div>• <span className="font-medium">55-70%</span> - Moderate</div>
+                        <div>• <span className="font-medium">&lt;55%</span> - Low (review result)</div>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-lg">🛡️</span>
+                    <div>
+                      <p className="font-semibold text-green-300 mb-1">Recommended Actions</p>
+                      <p className="text-xs text-gray-400">
+                        {result.anomaly === 1
+                          ? 'Anomaly detected: Investigate source IP, block traffic if needed, review firewall rules'
+                          : 'Normal traffic: No immediate action required. Continue monitoring'
+                        }
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -183,7 +305,7 @@ export default function PredictionForm() {
               </div>
               <div className="bg-slate-700/30 rounded-lg p-4">
                 <p className="text-gray-400 text-sm">Response Time</p>
-                <p className="text-cyan-300 font-bold mt-1">< 100ms</p>
+                <p className="text-cyan-300 font-bold mt-1">~100ms</p>
               </div>
               <div className="bg-slate-700/30 rounded-lg p-4">
                 <p className="text-gray-400 text-sm">Features Analyzed</p>
